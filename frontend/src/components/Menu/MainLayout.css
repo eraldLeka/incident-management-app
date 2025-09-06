@@ -1,0 +1,15 @@
+/* Në CSS e faqes që renditet nën MainLayout */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+main {
+  margin-top: 70px; 
+  width: 100%;
+  min-height: calc(100vh - 70px);
+  box-sizing: border-box;
+}

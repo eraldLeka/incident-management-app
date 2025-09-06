@@ -1,0 +1,78 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 35px;
+  overflow: hidden;
+  width: 100%;
+  gap: 4px;
+  padding: 2px;
+  box-sizing: border-box;
+}
+.search-bar input:focus {
+  outline: none; 
+  border-radius: 35px; 
+  box-shadow: 0 0 0 2px #3b82f6; 
+}
+
+
+.search-bar input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  padding: 5px 8px;
+  font-size: 13px; 
+  color: #111827;
+  font-weight: 600;
+  height: 13px;
+}
+
+.search-bar button {
+  flex: 0 0 32px; 
+  background: #3b82f6;
+  border: none;
+  border-radius: 50%;
+  width: 2px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.search-bar button:hover {
+  background-color: #1d4ed8;
+}
+
+/* SVG në button */
+.search-bar button svg {
+  color: #fff;
+  width: 18px;
+  height: 18px;
+}
+
+/* Responsive për ekrane të vogla */
+@media (max-width: 500px) {
+  .search-bar {
+    gap: 3px;
+    padding: 1px;
+  }
+
+  .search-bar input {
+    font-size: 12px;
+    height: 26px;
+  }
+
+  .search-bar button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .search-bar button svg {
+    width: 16px;
+    height: 16px;
+  }
+}

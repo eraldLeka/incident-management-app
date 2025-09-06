@@ -1,0 +1,92 @@
+body {
+  background: linear-gradient(135deg, #e3ecf9, #f9f9ff);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+form {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.65);
+  border-radius: 20px;
+  border: 1px solid rgba(200, 200, 255, 0.3);
+  box-shadow: 10px 10px 30px #d1d9e6, -10px -10px 30px #ffffff;
+  padding: 40px 30px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: all 0.3s ease;
+  height: fit-content;
+}
+
+form h1 {
+  text-align: center;
+  font-weight: bolder;
+  margin: 0;
+  font-size: 2.8rem;
+}
+
+form h2 {
+  text-align: center;
+  color: #080864;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: bolder;
+}
+
+input[type="email"],
+input[type="password"] {
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: none;
+  background: #f0f4ff;
+  box-shadow: inset 6px 6px 12px #d4dbe8,
+              inset -6px -6px 12px #ffffff;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+}
+
+input:focus {
+  outline: none;
+  background: #ffffff;
+  box-shadow: inset 4px 4px 10px #cdd4e2,
+              inset -4px -4px 10px #ffffff,
+              0 0 0 2px #2563eb;
+}
+
+button[type="submit"] {
+  background: linear-gradient(135deg, #5a8dee, #3f72e0);
+  color: white;
+  padding: 14px 0;
+  border: none;
+  border-radius: 16px;
+  margin-top: 12px;
+  font-weight: bolder;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(90, 141, 238, 0.3);
+  transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(135deg, #3f72e0, #2c5cc0);
+  box-shadow: 0 12px 24px rgba(63, 114, 224, 0.4);
+  transform: translateY(-2px);
+}
+
+button[type="submit"]:active {
+  transform: scale(0.97);
+  box-shadow: inset 0 4px 10px rgba(0,0,0,0.1);
+}
+
+p {
+  margin: 0;
+  color: #e63946;
+  font-weight: 600;
+  text-align: center;
+  font-size: 0.95rem;
+}
