@@ -19,7 +19,6 @@ class IncidentCategory(str, enum.Enum):
     software = "software"
     network = "network"
     security = "security"
-    other = "other"
 
 class Incident(Base):
     __tablename__ = "incidents"

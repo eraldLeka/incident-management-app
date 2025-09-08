@@ -20,6 +20,8 @@ def get_request_id(request: Request):
     return request.headers.get("X-Request-ID", "N/A")
 
 
+
+
 @router.get("/", response_model=List[UserRead])
 def get_system_users(
     db: Session = Depends(get_db),
@@ -80,7 +82,7 @@ def create_user(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create user")
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}", status_code=status.HTTP_200_OK)
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),

@@ -42,7 +42,7 @@ export default function Menu() {
               <li><Link to="/incidents/new">Report Incident</Link></li>
             )}
             <li><Link to="/my-incidents">Incidents</Link></li>
-            <li><Link>My Profile</Link></li>
+            <li><Link>Statistics</Link></li>
           </ul>
         </nav>
         <button onClick={handleLogout} className="logout-button">Logout</button>

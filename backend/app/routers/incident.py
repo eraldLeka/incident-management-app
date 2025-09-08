@@ -8,6 +8,8 @@ from app.routers.auth import get_current_user
 from app.utils.logger import info, debug, warning, exception, logger
 from fastapi.encoders import jsonable_encoder
 from datetime import datetime
+from app.models import IncidentCategory
+
 
 router = APIRouter(
     prefix="/incidents",
@@ -52,55 +54,94 @@ def get_incidents(
     current_user: models.User = Depends(get_current_user),
     status: Optional[List[str]] = Query(None),
     priority: Optional[List[str]] = Query(None),
+    category: Optional[List[str]] = Query(None, description="Filter by categories"),
+    startDate: Optional[str] = Query(None, description="Filter incidents from this date YYYY-MM-DD"),
     search: Optional[str] = None,
-    order_by: Optional[str] = None,
-    date: Optional[datetime] = Query(None, description="Show  incidents from this date onwards")
+    sortBy: Optional[str] = Query("created_at", description="Sort by: created_at, priority, status"),
+    sortOrder: Optional[str] = Query("desc", description="Sort order: asc or desc"),
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(10, ge=1, le=100, description="Number of incidents per page")
 ):
     query = db.query(models.Incident)
 
-    # 🔹 Filtrimi sipas status
+    # 🔹 Filtri për status
     if status:
-        query = query.filter(models.Incident.status.in_(status))
+        status_enums = [models.IncidentStatus(s) for s in status]
+        query = query.filter(models.Incident.status.in_(status_enums))
 
-    # 🔹 Filtrimi sipas priority
+    # 🔹 Filtri për priority
     if priority:
-        query = query.filter(models.Incident.priority.in_(priority))
+        priority_enums = [models.IncidentPriority(p) for p in priority]
+        query = query.filter(models.Incident.priority.in_(priority_enums))
 
-    # 🔹 Search (opsional)
+    # 🔹 Filtri për category
+    if category:
+        category_enums = [models.IncidentCategory(c) for c in category]
+        query = query.filter(models.Incident.category.in_(category_enums))
+
+    # 🔹 Rol dhe shikueshmëria e incidenteve
+    if current_user.role.startswith("admin_") and current_user.role != "admin_system":
+        query = query.filter(models.Incident.resolver_id == current_user.id)
+    elif current_user.role != "admin_system":
+        query = query.filter(models.Incident.reporter_id == current_user.id)
+    # admin_system shikon të gjitha kategoritë (filtri i category aplikohet më lart)
+
+    # 🔹 Filtri për datën
+    if startDate:
+        try:
+            date_obj = datetime.strptime(startDate, "%Y-%m-%d")
+            query_on_date = query.filter(
+                models.Incident.created_at >= datetime.combine(date_obj, datetime.min.time()),
+                models.Incident.created_at <= datetime.combine(date_obj, datetime.max.time())
+            )
+            incidents_on_date = query_on_date.all()
+            if incidents_on_date:
+                query = query_on_date
+            else:
+                query = query.filter(models.Incident.created_at >= datetime.combine(date_obj, datetime.min.time()))
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
+
+    # 🔹 Search
     if search:
         query = query.filter(
-            models.Incident.title.ilike(f"%{search}%")
-            | models.Incident.description.ilike(f"%{search}%")
+            or_(
+                models.Incident.title.ilike(f"%{search}%"),
+                models.Incident.description.ilike(f"%{search}%")
+            )
         )
-    
-    if date:
-        query = query.filter(models.Incident.created_at >= date)
 
-    # 🔹 Renditja sipas priority
+    # 🔹 Sort
     priority_order = case(
-        (models.Incident.priority == "low", 1),
-        (models.Incident.priority == "medium", 2),
-        (models.Incident.priority == "high", 3),
+        (models.Incident.priority == models.IncidentPriority.low, 1),
+        (models.Incident.priority == models.IncidentPriority.medium, 2),
+        (models.Incident.priority == models.IncidentPriority.high, 3),
+        (models.Incident.priority == models.IncidentPriority.critical, 4),
+        else_=5
+    )
+    status_order = case(
+        (models.Incident.status == models.IncidentStatus.open, 1),
+        (models.Incident.status == models.IncidentStatus.in_progress, 2),
+        (models.Incident.status == models.IncidentStatus.solved, 3),
         else_=4
     )
 
-    # 🔹 Renditja sipas status
-    status_order = case(
-        (models.Incident.status == "open", 1),
-        (models.Incident.status == "in_progress", 2),
-        (models.Incident.status == "solved", 3),
-        (models.Incident.status == "archived", 4),
-        else_=5
-    )
+    order_func = lambda col: col.asc() if sortOrder == "asc" else col.desc()
 
-    if order_by == "priority":
-        query = query.order_by(priority_order.asc())
-    elif order_by == "status":
-        query = query.order_by(status_order.asc())
+    if sortBy == "priority":
+        query = query.order_by(order_func(priority_order))
+    elif sortBy == "status":
+        query = query.order_by(order_func(status_order))
     else:
-        query = query.order_by(models.Incident.created_at.desc())
+        query = query.order_by(order_func(models.Incident.created_at))
+
+    # 🔹 Pagination
+    offset = (page - 1) * page_size
+    query = query.offset(offset).limit(page_size)
 
     return query.all()
+
+
 
 @router.delete("/{incident_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_incident(

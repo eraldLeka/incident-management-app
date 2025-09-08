@@ -1,4 +1,6 @@
+from urllib import response
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -10,6 +12,7 @@ import os
 from app import database, models, schemas
 from app.utils import hashing, token
 from app.utils.logger import logger
+from fastapi.encoders import jsonable_encoder
 
 load_dotenv()
 
@@ -118,9 +121,10 @@ async def login(
                 detail="Invalid email or password"
             )
 
-        # Create token
+        # Create tokens
         try:
             access_token = token.create_access_token(data={"sub": user.email})
+            refresh_token = token.create_refresh_token({"sub": user.email})
             user_data = schemas.UserRead.from_orm(user)
             logger.info(f"[RequestID={request_id}] Token and user data created successfully for email: {user.email}")
             logger.debug(f"[RequestID={request_id}] Access token payload: {access_token}")
@@ -130,13 +134,24 @@ async def login(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Error processing login"
             )
+        
+        #Return response with HttpOnly refresh token cookie
+        response = JSONResponse(
+            content=jsonable_encoder({
+                "access_token": access_token,
+                "token_type":"bearer",
+                "user": user_data
+            })
+        )
+        response.set_cookie(
+            key="refresh_token",
+            value = refresh_token,
+            httponly = True,
+            max_age = 7*24*60*60
+        )
 
         logger.info(f"[RequestID={request_id}] Login successful for email: {login_request.email}")
-        return LoginResponse(
-            access_token=access_token,
-            token_type="bearer",
-            user=user_data
-        )
+        return response
 
     except HTTPException:
         raise
@@ -146,6 +161,86 @@ async def login(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
+
+
+#Refresh endpoint
+@router.post("/refresh", response_model=LoginResponse)
+def refresh_access_token(request: Request, db: Session = Depends(database.get_db), request_id: str = Depends(get_request_id)):
+    try:
+        # Get refresh token from cookie
+        refresh_token = request.cookies.get("refresh_token")
+        if not refresh_token:
+            logger.info(f"[RequestID={request_id}] No refresh token provided")
+            raise HTTPException(status_code=401, detail="No refresh token provided")
+        # decode refresh token
+        try:
+            payload = jwt.decode(refresh_token, secret_key, algorithms=[ALGORITHM])
+            email = payload.get("sub")
+            if not email:
+                logger.info(f"[RequestID={request_id}] Refresh token missing 'sub'")
+                raise HTTPException(status_code=401, detail="Invalid refresh token")
+        except JWTError:
+            logger.exception(f"[RequestID={request_id}] Invalid or expired refresh token")
+            raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+        
+        # get user from db
+        try:
+            user = db.query(models.User).filter(models.User.email == email).first()
+            if not user:
+                raise HTTPException(status_code=401, detail="User not found")
+        except Exception as e:
+            logger.exception(f"[RequestID={request_id}] Error fetching user: {str(e)}")
+            raise HTTPException(status_code=500, detail="Internal Server Error")
+        
+        # create new access token
+        new_access_token = token.create_access_token({"sub": email})
+        user_data = schemas.UserRead.from_orm(user)
+
+        new_refresh_token = token.create_refresh_token({"sub": email})
+        
+
+        # create JWTResponse and set cookie for refresh token
+        response = JSONResponse(
+            content={
+                "access_token": new_access_token,
+                "token_type": "bearer",
+                "user": user_data.dict()
+            }
+        )
+
+        response.set_cookie(
+            key="refresh_token",
+            value=new_refresh_token,
+            httponly=True,
+            max_age=7*24*60*60  # 7 ditë
+        )
+
+        logger.info(f"[RequestID={request_id}] Access token refreshed for user: {email}")
+        return response
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"[RequestID={request_id}] Unexpected error in refresh endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @router.get("/me", response_model=UserInfo)

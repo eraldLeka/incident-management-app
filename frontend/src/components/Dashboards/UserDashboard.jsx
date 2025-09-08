@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Menu from "../Menu/Menu";
 import api from "../../services/api";
 import "../Dashboards/Dashboard.css";
@@ -6,6 +7,7 @@ import "../Dashboards/Dashboard.css";
 export default function UserDashboard() {
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -22,79 +24,95 @@ export default function UserDashboard() {
     };
 
     fetchIncidents();
-    return () => (isMounted = false);
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const openIncidents = incidents
-    .filter(i => i.status.toLowerCase() === "open")
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-    .slice(0, 3);
+  const getDashboardIncidents = () => {
+    const result = [];
+    const statuses = ["open", "in_progress", "solved"];
+
+    for (let status of statuses) {
+      const filtered = incidents
+        .filter(i => i.status.toLowerCase() === status)
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      for (let i of filtered) {
+        if (result.length < 3) result.push(i);
+      }
+
+      if (result.length >= 3) break;
+    }
+
+    return result;
+  };
+  const displayIncidents = getDashboardIncidents();
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
-    const pad = (num) => num.toString().padStart(2, '0');
-
-    const day = pad(date.getDate());
-    const month = pad(date.getMonth() + 1);
-    const year = date.getFullYear();
-
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
-    const seconds = pad(date.getSeconds());
-
-    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    const pad = (num) => num.toString().padStart(2, "0");
+    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   };
 
   return (
-    <>
-      <Menu />
-      <main className="dashboard-body">
-
-        {/* Open Incidents Section */}
-        <section className="dashboard-section">
-          <h2>OPEN INCIDENTS</h2>
-
-          {loading ? (
-            <div className="loading-container">Loading...</div>
-          ) : openIncidents.length === 0 ? (
-            <div className="no-incidents">No open incidents</div>
-          ) : (
-            <div className="incident-grid dashboard">
-              {openIncidents.map((incident) => (
-                <div key={incident.id} className={`incident-card ${incident.status.toLowerCase()}`}>
-                  <div className="info-bar">
-                    <span className={`status ${incident.status.toLowerCase()}`}>{incident.status}</span>
-                    <span className={`priority ${incident.priority.toLowerCase()}`}>{incident.priority}</span>
+      <>
+        <Menu />
+        <main className="dashboard-body">
+          {/* INCIDENTS */}
+          <section className="dashboard-section">
+            <h2>Latest Incidents</h2>
+  
+            {loading ? (
+              <div className="loading-container">Loading...</div>
+            ) : displayIncidents.length === 0 ? (
+              <div className="no-incidents">No incidents in your sector</div>
+            ) : (
+              <div className="incident-grid dashboard">
+                {displayIncidents.map((incident) => (
+                  <div
+                    key={incident.id}
+                    className={`incident-card ${incident.status.toLowerCase()}`}
+                  >
+                    <div className="info-bar">
+                      <span className={`status ${incident.status.toLowerCase()}`}>
+                        {incident.status.replace("_", " ")}
+                      </span>
+                      <span className={`priority ${incident.priority.toLowerCase()}`}>
+                        {incident.priority}
+                      </span>
+                    </div>
+                    <h3>{incident.title}</h3>
+                    <p>{incident.description}</p>
+                    <div className="incident-date">
+                      {formatDateTime(incident.created_at)}
+                    </div>
                   </div>
-                  <h3>{incident.title}</h3>
-                  <p>{incident.description}</p>
-                  <div className="incident-date">{formatDateTime(incident.created_at)}</div>
+                ))}
+  
+                {/* Karta për "See All" */}
+                <div
+                  className="incident-card new-incident-card"
+                  title="See All Incidents"
+                  onClick={() => navigate("/incidents")}
+                >
+                  See All
                 </div>
-              ))}
-
-              {/* Karta "+" për incident të ri */}
-              <div
-                className="incident-card new-incident-card"
-                title="Report New Incident"
-                onClick={() => window.location.href = "/incidents/new"}
-              >
-                +
               </div>
-            </div>
-          )}
-        </section>
-
-        {/* Paragraph Section */}
-        <section className="dashboard-section">
-          <h2>About the Dashboard</h2>
-          <p>
-            Welcome to your user dashboard. Here you can view the most recent open incidents,
-            track their progress, and quickly report new ones. This section can be used to display
-            general information or instructions for users.
-          </p>
-        </section>
-
-      </main>
-    </>
-  );
-}
+            )}
+          </section>
+  
+          {/* INFO SECTION */}
+          <section className="dashboard-section">
+            <h2>About the Sector Admin Dashboard</h2>
+            <p>
+              Welcome to the admin dashboard. Here you can monitor the most recent
+              incidents in your sector, track their status, and access the full list
+              for deeper investigation.
+            </p>
+          </section>
+        </main>
+      </>
+    );
+  }
+  

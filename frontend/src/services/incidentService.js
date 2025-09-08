@@ -1,30 +1,38 @@
 // src/services/incidentService.js
 import api from './api';
 
-// ----------------------------
-// Get Incidents me filtra
-// ----------------------------
-export const getIncidents = async ({ page = 1, pageSize = 10, status, priority, startDate, endDate, sort_by, sort_order } = {}) => {
+export const getIncidents = async ({
+  page = 1,
+  pageSize = 10,
+  status,
+  priority,
+  category,
+  startDate,
+  endDate,
+  sort_by = "created_at",
+  sort_order = "desc",
+} = {}) => {
   try {
     const response = await api.get("/incidents/", {
       params: {
         page,
         page_size: pageSize,
-        status,    // <-- lë array direkt
-        priority,  // <-- lë array direkt
-        start_date: startDate,
-        end_date: endDate,
-        sort_by,
-        sort_order,
+        status,
+        priority,
+        category,
+        startDate,
+        endDate,
+        sortBy: sort_by,
+        sortOrder: sort_order,
       },
       paramsSerializer: params => {
-        // Axios nuk serializon array automatikisht për FastAPI
         const searchParams = new URLSearchParams();
         Object.keys(params).forEach(key => {
-          if (Array.isArray(params[key])) {
-            params[key].forEach(val => searchParams.append(key, val));
-          } else if (params[key] !== undefined && params[key] !== null) {
-            searchParams.append(key, params[key]);
+          const value = params[key];
+          if (Array.isArray(value)) {
+            value.forEach(v => searchParams.append(key, v));
+          } else if (value !== undefined && value !== null) {
+            searchParams.append(key, value);
           }
         });
         return searchParams.toString();
@@ -37,8 +45,6 @@ export const getIncidents = async ({ page = 1, pageSize = 10, status, priority, 
   }
 };
 
-
-// Search Incidents
 export const searchIncidents = async (q, skip = 0, limit = 10) => {
   try {
     const response = await api.get("/incidents/search", {
@@ -51,11 +57,10 @@ export const searchIncidents = async (q, skip = 0, limit = 10) => {
   }
 };
 
-// Update Incident Status
 export const updateIncidentStatus = async (id, newStatus) => {
   try {
     const response = await api.patch(`/incidents/${id}/status`, null, {
-      params: { new_status: newStatus } // lowercase nga frontend
+      params: { new_status: newStatus }
     });
     return response.data;
   } catch (err) {
@@ -64,7 +69,6 @@ export const updateIncidentStatus = async (id, newStatus) => {
   }
 };
 
-// Get Incident by ID
 export const getIncidentById = async (id) => {
   try {
     const response = await api.get(`/incidents/${id}`);
@@ -75,7 +79,6 @@ export const getIncidentById = async (id) => {
   }
 };
 
-// Create Incident
 export const createIncident = async (incidentData) => {
   try {
     const response = await api.post("/incidents/", incidentData);
@@ -86,8 +89,6 @@ export const createIncident = async (incidentData) => {
   }
 };
 
-
-// Delete Incident
 export const deleteIncident = async (id) => {
   try {
     const response = await api.delete(`/incidents/${id}`);
@@ -97,7 +98,7 @@ export const deleteIncident = async (id) => {
     throw err;
   }
 };
-// Get My Incidents
+
 export const getMyIncidents = async () => {
   try {
     const response = await api.get("/incidents/");

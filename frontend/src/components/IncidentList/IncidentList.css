@@ -1,13 +1,13 @@
 /* Container */
 .incident-list-container {
     width: 100%;
-    color: black;
     padding: 0;
     margin-top: 0;
     background-color: #f7f8fa;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     overflow-x: auto; 
+    color: #111827; /* default text color */
 }
 
 /* Horizontal scroll wrapper */
@@ -24,27 +24,26 @@
     font-size: 13px;
     text-align: left;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    color: black;
+    color: #111827;
 }
 
 /* Table title */
 thead th.table-title {
     background-color: #325286 !important;
-    color: #f9fafb !important;
+    color: #f9fafb !important; 
     font-size: 28px;
     font-weight: bold;
     padding: 10px;
-    text-align: center;
+    text-align: center ;
     position: sticky;
     top: 0;
     z-index: 3;
-    color: black;
 }
 
 /* Header i kolonave */
 thead tr th {
     background-color: #325286 !important;
-    color: #f3f4f6 !important;
+    color: #f9fafb !important;
     font-size: 14px;
     font-weight: 600;
     padding: 8px 10px;
@@ -52,7 +51,13 @@ thead tr th {
     position: sticky;
     top: 40px;
     z-index: 2;
+
+    text-align: center;      /* qendrim horizontal */
+    vertical-align: middle;  /* qendrim vertikal */
 }
+
+
+
 
 /* Table body */
 tbody td {
@@ -62,12 +67,15 @@ tbody td {
     font-weight: 500;
     color: #111827;
 }
+th{
+  align-items: center;
+  text-align: center ;
+}
 
 /* Row background by status */
 tr.open-row { background-color: #d8eaf5 !important; }
 tr.in_progress-row { background-color: #ede4d1 !important; }
 tr.solved-row { background-color: #d7f7e0 !important; }
-
 
 /* Alternating rows */
 tbody tr:nth-child(even):not(.open-row):not(.in_progress-row):not(.solved-row) {
@@ -107,6 +115,45 @@ tbody tr:hover td {
 .status-badge.in_progress { background-color: #f59e0b; }
 .status-badge.solved { background-color: #10b981; }
 
+/* Badge-style select dropdown */
+.badge-select {
+  position: relative;
+  display: inline-block;
+  min-width: 120px;
+}
+
+.badge-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid #9ca3af;
+  background-color: #f9fafb;
+  color: #111827;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.badge-select select:hover {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.badge-select select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 4px rgba(59,130,246,0.5);
+}
+
+
+
+.badge-select option[value="open"] { color: #3b82f6; font-weight: 600; }
+.badge-select option[value="in_progress"] { color: #f59e0b; font-weight: 600; }
+.badge-select option[value="solved"] { color: #10b981; font-weight: 600; }
+
 /* Pagination */
 .pagination {
     margin-top: 10px;
@@ -115,6 +162,7 @@ tbody tr:hover td {
     align-items: center;
     font-size: 18px;
     font-weight: 700;
+    color: #111827;
 }
 
 .pagination button {
@@ -154,13 +202,10 @@ tbody tr:hover td {
     thead, thead tr, thead th { display: table-header-group; }
 }
 
-
 .status-icon {
   display: inline-flex;
   align-items: center;
 }
-
-/* IncidentList.css */
 
 /* Modal overlay */
 .filter-modal {
@@ -177,14 +222,18 @@ tbody tr:hover td {
 }
 
 /* Modal content box */
+/* Modal content box */
 .filter-modal-content {
+  position: relative; /* <--- shto këtë */
   background-color: #fff;
   padding: 20px 25px;
   border-radius: 8px;
   min-width: 220px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   animation: fadeInModal 0.3s ease-out;
+  color: #111827; /* ensure text is visible */
 }
+
 
 /* Modal animation */
 @keyframes fadeInModal {
@@ -199,6 +248,7 @@ tbody tr:hover td {
   display: inline-block;
   cursor: pointer;
   text-transform: capitalize;
+  color: #111827;
 }
 
 /* Buttons inside modal */
@@ -212,7 +262,7 @@ tbody tr:hover td {
   font-weight: 500;
 }
 
-.filter-modal-content button:first-of-type {
+/* .filter-modal-content button:first-of-type {
   background-color: #4caf50;
   color: white;
 }
@@ -220,4 +270,71 @@ tbody tr:hover td {
 .filter-modal-content button:last-of-type {
   background-color: #f44336;
   color: white;
+} 
+/* Badge highlight animation on update */
+.priority-badge.updated,
+.status-badge.updated {
+  animation: highlightBadge 0.5s ease-in-out;
 }
+
+@keyframes highlightBadge {
+  0% { transform: scale(1); box-shadow: 0 0 0 rgba(0,0,0,0); }
+  50% { transform: scale(1.2); box-shadow: 0 0 8px rgba(0,0,0,0.4); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(0,0,0,0); }
+}
+
+.close-modal {
+  position: absolute;
+  top: -10px; /* e ngrit mbi titull */
+  right: 0; /* e vendos në cepin e djathtë */
+  font-size: 34px; /* më i madh */
+  font-weight: bolder;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+
+.close-modal:hover {
+  color: #ef4444;  
+}
+
+
+/* Modal buttons wrapper */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* Apply button – light green */
+.apply-btn {
+  background-color: #b6e0a8;
+  color: #000;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.apply-btn:hover {
+  background-color: #399809;
+}
+
+/* Clear button – dark grey */
+.clear-btn {
+  background-color: #b72323;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.clear-btn:hover {
+  background-color: #444;
+}
+
+
+

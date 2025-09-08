@@ -49,3 +49,14 @@ export const searchUsers = async (q, skip = 0, limit = 10) => {
     throw err;
   }
 };
+export const deleteUser = async(id)=>{
+  console.log("deleteUser called with id:",id);
+  try{
+    const response = await api.delete(`/users/${id}`);
+    console.log("deleteuser response:", response.data);
+    return response.data;
+  }catch(err){
+    console.error("deleteUser error:",err);
+    throw err;
+  }
+};

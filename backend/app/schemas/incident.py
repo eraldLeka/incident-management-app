@@ -22,7 +22,6 @@ class IncidentCategory(str, Enum):
     software = "software"
     network = "network"
     security = "security"
-    other = "other"
 
 # CREATE SCHEMA
 

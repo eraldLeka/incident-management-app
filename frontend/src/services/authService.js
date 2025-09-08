@@ -1,8 +1,6 @@
 import api from './api';
 
-// --------------------------
 // Authentication service
-// --------------------------
 
 /**
  * Login user
