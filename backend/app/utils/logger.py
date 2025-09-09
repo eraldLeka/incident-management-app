@@ -3,7 +3,7 @@ from logging.handlers import RotatingFileHandler
 import sys
 import os
 
-# Siguro që directory 'logs/' ekziston
+#  directory 'logs/' exsist
 os.makedirs("logs", exist_ok=True)
 
 class ContextFilter(logging.Filter):

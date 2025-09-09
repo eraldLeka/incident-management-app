@@ -20,8 +20,8 @@ class UserRead(BaseModel):
     id: int
     name: str
     email: EmailStr
-    role: str  # Changed to str to match the database
-    sector: Optional[str] = None  # Changed to str to match the database
+    role: str  
+    sector: Optional[str] = None  
     created_at: datetime
 
     class Config:

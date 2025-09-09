@@ -1,72 +1,65 @@
-import React, { useState } from 'react';
-import { registerUser } from '../../services/authService';
-import "./RegisterForm.css";
+import React, { useState } from "react";
+import { registerUser } from "../../services/authService";
+import styles from "./RegisterForm.module.css";
 
 const RegisterForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'user',
-    sector: '',
+    name: "",
+    email: "",
+    password: "",
+    repeatPassword: "",
+    role: "user",
+    sector: "",
   });
 
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
-
-    console.log("Input changed:", e.target.name, e.target.value);
-
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register form submitted with:", formData);
     setError(null);
 
-    let finalRole = formData.role; //map role and sector to final role that backend accepts
-    if (formData.role === 'admin') {
+    if (formData.password !== formData.repeatPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    let finalRole = formData.role;
+    if (formData.role === "admin") {
       const roleMap = {
         Hardware: "admin_hardware",
         Software: "admin_software",
         Network: "admin_network",
         Security: "admin_security",
       };
-      finalRole = roleMap[formData.sector] || 'admin_system';
+      finalRole = roleMap[formData.sector] || "admin_system";
     }
 
-    const payload = {
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      role: finalRole,
-      sector: formData.sector,
-    };
-
-    console.log("Payload to send: ", payload);
+    const payload = { ...formData, role: finalRole };
 
     try {
       await registerUser(payload);
-      console.log("User registered successfully!", response);
       onClose();
     } catch (err) {
-      console.error("Error registering user:", err);
       setError(
         err.response?.data?.detail ||
-        err.response?.data?.message ||
-        'Registration failed'
+          err.response?.data?.message ||
+          "Registration failed"
       );
     }
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <h2>Add user</h2>
-        <form onSubmit={handleSubmit}>
+    <div className={styles.overlay}>
+      <form className={styles.modal} onSubmit={handleSubmit}>
+        <h2 className={styles.title}>Add User</h2>
 
-          <label>
+        {/* Row Name + Email */}
+        <div className={styles.row}>
+          <label className={styles.label}>
             Name
             <input
               type="text"
@@ -74,10 +67,11 @@ const RegisterForm = ({ onClose }) => {
               value={formData.name}
               onChange={handleChange}
               required
+              className={styles.input}
             />
           </label>
 
-          <label>
+          <label className={styles.label}>
             Email
             <input
               type="email"
@@ -85,10 +79,14 @@ const RegisterForm = ({ onClose }) => {
               value={formData.email}
               onChange={handleChange}
               required
+              className={styles.input}
             />
           </label>
+        </div>
 
-          <label>
+        {/* Row Password + Repeat Password */}
+        <div className={styles.row}>
+          <label className={styles.label}>
             Password
             <input
               type="password"
@@ -96,45 +94,72 @@ const RegisterForm = ({ onClose }) => {
               value={formData.password}
               onChange={handleChange}
               required
+              className={styles.input}
             />
           </label>
 
-          <label>
+          <label className={styles.label}>
+            Repeat Password
+            <input
+              type="password"
+              name="repeatPassword"
+              value={formData.repeatPassword}
+              onChange={handleChange}
+              required
+              className={styles.input}
+            />
+          </label>
+        </div>
+
+        {/* Row Role + Sector */}
+        <div className={styles.row}>
+          <label className={styles.label}>
             Role
-            <select name="role" value={formData.role} onChange={handleChange}>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className={styles.select}
+            >
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
           </label>
 
-          <label>
+          <label className={styles.label}>
             Sector
             <select
               name="sector"
               value={formData.sector}
               onChange={handleChange}
               required
+              className={styles.select}
             >
-              <option value="">Choose a sector you work in</option>
+              <option value="">Choose a sector</option>
               <option value="Hardware">Hardware</option>
               <option value="Software">Software</option>
               <option value="Network">Network</option>
               <option value="Security">Security</option>
             </select>
           </label>
+        </div>
 
-          {error && (
-            <div style={{ color: "red", fontWeight: "bold" }}>
-              {Array.isArray(error) ? error.map((e, i) => <p key={i}>{e.msg}</p>) : <p>{error}</p>}
-            </div>
-          )}
+        {error && <p className={styles.error}>{error}</p>}
 
-          <div className="modal-actions">
-            <button type="submit">Create</button>
-            <button type="button" onClick={() => { console.log("Cancel clicked"); onClose(); }}>Cancel</button>
-          </div>
-        </form>
-      </div>
+        {/* Buttons */}
+        <div className={styles.actions}>
+          <button type="submit" className={`${styles.btn} ${styles.primary}`}>
+            Add
+          </button>
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.secondary}`}
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

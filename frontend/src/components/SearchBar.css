@@ -47,32 +47,9 @@
   background-color: #1d4ed8;
 }
 
-/* SVG në button */
+/* SVG  button */
 .search-bar button svg {
   color: #fff;
   width: 18px;
   height: 18px;
-}
-
-/* Responsive për ekrane të vogla */
-@media (max-width: 500px) {
-  .search-bar {
-    gap: 3px;
-    padding: 1px;
-  }
-
-  .search-bar input {
-    font-size: 12px;
-    height: 26px;
-  }
-
-  .search-bar button {
-    width: 28px;
-    height: 28px;
-  }
-
-  .search-bar button svg {
-    width: 16px;
-    height: 16px;
-  }
 }

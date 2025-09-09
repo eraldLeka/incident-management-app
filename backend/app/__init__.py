@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers.auth import router as auth_router
 from app.routers.incident import router as incident_router
 from app.routers.userTable import router as users_router
+from app.routers.stats import router as stats_router
 from app import models, database
 
 
@@ -23,4 +24,5 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(incident_router)
 app.include_router(users_router)
+app.include_router(stats_router)
 

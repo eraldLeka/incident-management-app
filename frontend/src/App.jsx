@@ -6,6 +6,7 @@ import IncidentList from "./components/IncidentList/IncidentList";
 import IncidentForm from "./components/Forms/IncidentForm";
 import MyIncidents from "./pages/MyIncidents";
 import Users from "./pages/Users";
+import Statistics from "./pages/Statistics";
 import MainLayout from "./components/Menu/MainLayout";
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
             <Route path="/incidents/new" element={<IncidentForm />} />
             <Route path="/my-incidents" element={<MyIncidents />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/statistics" element={<Statistics/>}/>
           </Route>
         )}
 

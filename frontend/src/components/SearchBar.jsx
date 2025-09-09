@@ -13,7 +13,7 @@ export default function SearchBar({ query, setQuery, onSearch }) {
   const handleClear = () => {
     setQuery("");
     onSearch?.("");
-    inputRef.current.focus(); // mbaj cursorin pas clear
+    inputRef.current.focus(); 
   };
 
   return (

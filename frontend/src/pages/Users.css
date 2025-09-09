@@ -33,13 +33,6 @@ body, #root {
 .search-bar-container {
     width: 200px;
 }
-
-@media (max-width: 500px) {
-    .search-bar-container {
-        width: 100%;
-    }
-}
-
 /* SearchBar element */
 .search-bar-container .search-bar {
     display: flex;
@@ -269,25 +262,22 @@ tbody td svg:hover {
     100% { transform: translateY(0); opacity: 1; }
 }
 
-/* Loading spinner */
 .loading-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.4);
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 10;
+  align-items: center;
+  z-index: 999;
 }
 
+/* Spinner animation */
 .spinner {
-  width: 42px;
-  height: 42px;
-  border: 4px solid #ddd;
-  border-top: 4px solid #3498db;
+  width: 50px;
+  height: 50px;
+  border: 6px solid #ccc;
+  border-top-color: #1d4ed8; /* blu */
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -296,73 +286,16 @@ tbody td svg:hover {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive table for small screens */
-@media (max-width: 600px) {
-    table, thead, tbody, th, td, tr {
-        display: block;
-    }
-
-    thead tr {
-        display: none;
-    }
-
-    tbody tr {
-        margin-bottom: 12px;
-        background-color: #fff;
-        border-left: 4px solid #3b82f6;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-        padding: 10px;
-    }
-
-    tbody td {
-        padding: 8px 10px;
-        text-align: right;
-        position: relative;
-    }
-
-    tbody td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        font-weight: 600;
-        color: #1f3046;
-        text-align: left;
-    }
-}
-
-/* Modal backdrop i përbashkët */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-/* Modal content */
-.modal-content {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-/* Titulli i modalit */
+/* modal title */
 .modal-title {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 20px;
   text-align: center;
-  color: #1f2937;
+  color: #0f4a05;
 }
 
-/* Butonat e opsioneve */
+/* options buttons */
 .options-buttons {
   display: flex;
   flex-direction: column;
@@ -378,7 +311,7 @@ tbody td svg:hover {
   transition: all 0.2s ease;
 }
 
-/* Butoni Edit */
+/*  Edit button */
 .options-buttons button:nth-child(1) {
   background-color: #3b82f6; /* blue */
   color: white;
@@ -387,9 +320,9 @@ tbody td svg:hover {
   background-color: #1d4ed8;
 }
 
-/* Butoni Delete */
+/*  Delete BUTTON */
 .options-buttons .delete-btn {
-  background-color: #ef4444; /* red */
+  background-color: #ef4444;
   color: white;
 }
 .options-buttons .delete-btn:hover {
@@ -397,15 +330,15 @@ tbody td svg:hover {
 }
 
 /* Butoni Cancel */
-.options-buttons button:last-child {
-  background-color: #e5e7eb; /* gray */
+.options-modal-content .options-buttons button:last-child {
+  background-color: #e5e7eb;
   color: #111827;
 }
-.options-buttons button:last-child:hover {
+.options-modal-content .options-buttons button:last-child:hover {
   background-color: #d1d5db;
 }
 
-/* Animacion për modalin */
+/* animation for modal */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -417,7 +350,7 @@ tbody td svg:hover {
   }
 }
 
-/* FadeIn animation për rreshtat e tabelës users */
+/* FadeIn animation user rows */
 .user-row {
   opacity: 0;
   transform: translateY(10px);
@@ -427,4 +360,70 @@ tbody td svg:hover {
 @keyframes fadeInRows {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* -------------------------------
+   Options Modal
+---------------------------------*/
+.options-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4); /* semi-transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.options-modal-content {
+  background: linear-gradient(135deg, #96bbef, #c8c8df);
+  border-radius: 12px;
+  padding: 30px 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.options-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.options-buttons button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.options-buttons button:nth-child(1) {
+  background-color: #3b82f6;
+  color: white;
+}
+.options-buttons button:nth-child(1):hover {
+  background-color: #1d4ed8;
+}
+
+.options-buttons .delete-btn {
+  background-color: #ef4444;
+  color: white;
+}
+.options-buttons .delete-btn:hover {
+  background-color: #b91c1c;
+}
+
+.options-buttons button:last-child {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+.options-buttons button:last-child:hover {
+  background-color: #d1d5db;
 }

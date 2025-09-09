@@ -14,7 +14,6 @@ export const loginUser = async (loginData) => {
 
     console.log("loginUser response:", response.data);
 
-    // Strukturë e standardizuar për frontend
     return {
       access_token: response.data.access_token,
       token_type: response.data.token_type,

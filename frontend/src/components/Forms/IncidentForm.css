@@ -52,7 +52,7 @@
 .incident-form button {
   width: 100%;
   padding: 12px;
-  background-color: #000;
+  background: linear-gradient(135deg, #96bbef, #c8c8df);
   color: #fff;
   border: none;
   border-radius: 5px;

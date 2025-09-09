@@ -58,7 +58,7 @@ input:focus {
               0 0 0 2px #2563eb;
 }
 
-button[type="submit"] {
+.loginBtn {
   background: linear-gradient(135deg, #5a8dee, #3f72e0);
   color: white;
   padding: 14px 0;
@@ -71,8 +71,7 @@ button[type="submit"] {
   box-shadow: 0 10px 20px rgba(90, 141, 238, 0.3);
   transition: all 0.3s ease;
 }
-
-button[type="submit"]:hover {
+.loginBtn:hover {
   background: linear-gradient(135deg, #3f72e0, #2c5cc0);
   box-shadow: 0 12px 24px rgba(63, 114, 224, 0.4);
   transform: translateY(-2px);

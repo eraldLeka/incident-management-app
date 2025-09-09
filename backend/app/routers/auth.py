@@ -201,18 +201,18 @@ def refresh_access_token(request: Request, db: Session = Depends(database.get_db
 
         # create JWTResponse and set cookie for refresh token
         response = JSONResponse(
-            content={
+            content=jsonable_encoder({
                 "access_token": new_access_token,
                 "token_type": "bearer",
-                "user": user_data.dict()
-            }
+                "user": user_data
+            })
         )
 
         response.set_cookie(
             key="refresh_token",
             value=new_refresh_token,
             httponly=True,
-            max_age=7*24*60*60  # 7 ditë
+            max_age=7*24*60*60  
         )
 
         logger.info(f"[RequestID={request_id}] Access token refreshed for user: {email}")

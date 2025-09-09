@@ -37,12 +37,12 @@ export default function Menu() {
                 </Link>
               </li>
             )}
-            {/* Shfaq linkun Report Incident vetëm për jo-admin */}
+            {/* Report Incident only for nonadmin users */}
             {!isAdmin && (
               <li><Link to="/incidents/new">Report Incident</Link></li>
             )}
             <li><Link to="/my-incidents">Incidents</Link></li>
-            <li><Link>Statistics</Link></li>
+            <li><Link to="/statistics">Statistics</Link></li>
           </ul>
         </nav>
         <button onClick={handleLogout} className="logout-button">Logout</button>

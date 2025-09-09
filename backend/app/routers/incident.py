@@ -37,7 +37,7 @@ def create_incident(
         db.commit()
         db.refresh(db_incident)
 
-        # 🔹 Konverto në JSON me datat UTC
+        # 🔹 converting JSON datat UTC
         incident_data = jsonable_encoder(db_incident)
         print("Incident UTC:", incident_data["created_at"])
 
@@ -64,29 +64,34 @@ def get_incidents(
 ):
     query = db.query(models.Incident)
 
-    # 🔹 Filtri për status
+    # status filter
     if status:
         status_enums = [models.IncidentStatus(s) for s in status]
         query = query.filter(models.Incident.status.in_(status_enums))
 
-    # 🔹 Filtri për priority
+    #  priority filter
     if priority:
         priority_enums = [models.IncidentPriority(p) for p in priority]
         query = query.filter(models.Incident.priority.in_(priority_enums))
 
-    # 🔹 Filtri për category
+    #category filter
     if category:
         category_enums = [models.IncidentCategory(c) for c in category]
         query = query.filter(models.Incident.category.in_(category_enums))
 
-    # 🔹 Rol dhe shikueshmëria e incidenteve
-    if current_user.role.startswith("admin_") and current_user.role != "admin_system":
-        query = query.filter(models.Incident.resolver_id == current_user.id)
-    elif current_user.role != "admin_system":
+    # role
+    if current_user.role == "admin_system":
+        query = query  
+    elif current_user.role.startswith("admin_"):
+        sector_category = current_user.role.replace("admin_", "")
+        query = query.filter(
+            (models.Incident.resolver_id == current_user.id) |
+            ((models.Incident.resolver_id.is_(None)) & (models.Incident.category == sector_category))
+        )
+    else:
         query = query.filter(models.Incident.reporter_id == current_user.id)
-    # admin_system shikon të gjitha kategoritë (filtri i category aplikohet më lart)
 
-    # 🔹 Filtri për datën
+    # date filter
     if startDate:
         try:
             date_obj = datetime.strptime(startDate, "%Y-%m-%d")
@@ -102,7 +107,7 @@ def get_incidents(
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
 
-    # 🔹 Search
+    # Search
     if search:
         query = query.filter(
             or_(
@@ -111,7 +116,7 @@ def get_incidents(
             )
         )
 
-    # 🔹 Sort
+    # Sort
     priority_order = case(
         (models.Incident.priority == models.IncidentPriority.low, 1),
         (models.Incident.priority == models.IncidentPriority.medium, 2),
@@ -135,7 +140,7 @@ def get_incidents(
     else:
         query = query.order_by(order_func(models.Incident.created_at))
 
-    # 🔹 Pagination
+    # Pagination
     offset = (page - 1) * page_size
     query = query.offset(offset).limit(page_size)
 

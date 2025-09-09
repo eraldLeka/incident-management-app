@@ -7,7 +7,7 @@
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     overflow-x: auto; 
-    color: #111827; /* default text color */
+    color: #111827; 
 }
 
 /* Horizontal scroll wrapper */
@@ -51,13 +51,9 @@ thead tr th {
     position: sticky;
     top: 40px;
     z-index: 2;
-
-    text-align: center;      /* qendrim horizontal */
-    vertical-align: middle;  /* qendrim vertikal */
+    text-align: center;      
+    vertical-align: middle;  
 }
-
-
-
 
 /* Table body */
 tbody td {
@@ -148,8 +144,6 @@ tbody tr:hover td {
   box-shadow: 0 0 4px rgba(59,130,246,0.5);
 }
 
-
-
 .badge-select option[value="open"] { color: #3b82f6; font-weight: 600; }
 .badge-select option[value="in_progress"] { color: #f59e0b; font-weight: 600; }
 .badge-select option[value="solved"] { color: #10b981; font-weight: 600; }
@@ -192,16 +186,6 @@ tbody tr:hover td {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive – mobile */
-@media (max-width: 600px) {
-    .incident-table-wrapper { overflow-x: auto; }
-    .incident-table { min-width: 600px; }
-    tbody tr { display: block; margin-bottom: 10px; background-color: #fff; border-radius: 8px; padding: 10px; }
-    tbody td { display: flex; justify-content: space-between; padding: 6px 10px; text-align: left; }
-    tbody td::before { content: attr(data-label); font-weight: 600; color: #1f3046; margin-right: 10px; text-transform: capitalize; }
-    thead, thead tr, thead th { display: table-header-group; }
-}
-
 .status-icon {
   display: inline-flex;
   align-items: center;
@@ -222,16 +206,15 @@ tbody tr:hover td {
 }
 
 /* Modal content box */
-/* Modal content box */
 .filter-modal-content {
-  position: relative; /* <--- shto këtë */
+  position: relative; 
   background-color: #fff;
   padding: 20px 25px;
   border-radius: 8px;
   min-width: 220px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   animation: fadeInModal 0.3s ease-out;
-  color: #111827; /* ensure text is visible */
+  color: #111827; 
 }
 
 
@@ -285,9 +268,9 @@ tbody tr:hover td {
 
 .close-modal {
   position: absolute;
-  top: -10px; /* e ngrit mbi titull */
-  right: 0; /* e vendos në cepin e djathtë */
-  font-size: 34px; /* më i madh */
+  top: -10px; 
+  right: 0; 
+  font-size: 34px; 
   font-weight: bolder;
   border: none;
   background: none;

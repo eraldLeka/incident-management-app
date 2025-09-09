@@ -4,6 +4,10 @@ import Menu from "../Menu/Menu";
 import api from "../../services/api";
 import "../Dashboards/Dashboard.css";
 
+// charts
+import ThreeMonthsDonutApex from "../Statistics/statsDonutChartStatus";
+import Last7DaysAreaChart from "../Statistics/statusAreaChartStatus";
+
 export default function AdminDashboard() {
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +18,6 @@ export default function AdminDashboard() {
 
     const fetchIncidents = async () => {
       try {
-        // Merr incidentet për sektorin e adminit
         const response = await api.get("/incidents/");
         if (isMounted) setIncidents(response.data);
       } catch (err) {
@@ -30,14 +33,13 @@ export default function AdminDashboard() {
     };
   }, []);
 
-  // Merr 3 incidentet më të fundit për dashboard
   const getDashboardIncidents = () => {
     const result = [];
     const statuses = ["open", "in_progress", "solved"];
 
     for (let status of statuses) {
       const filtered = incidents
-        .filter(i => i.status.toLowerCase() === status)
+        .filter((i) => i.status.toLowerCase() === status)
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
       for (let i of filtered) {
@@ -105,15 +107,23 @@ export default function AdminDashboard() {
           )}
         </section>
 
-        {/* INFO SECTION */}
+        {/* CHARTS SECTION */}
         <section className="dashboard-section">
-          <h2>About the Sector Admin Dashboard</h2>
-          <p>
-            Welcome to the admin dashboard. Here you can monitor the most recent
-            incidents in your sector, track their status, and access the full list
-            for deeper investigation.
-          </p>
-        </section>
+                  <h2>Statistics</h2>
+                  <div className="charts-row">
+                    <div className="chart-container">
+                      <ThreeMonthsDonutApex />
+                    </div>
+                    <div className="chart-container">
+                      <Last7DaysAreaChart />
+                    </div>
+                  </div>
+                  <div className="see-more-btn-container">
+                    <button className="see-more-btn" onClick={() => navigate("/statistics")}>
+                      See More
+                    </button>
+                  </div>
+                </section>
       </main>
     </>
   );

@@ -7,6 +7,7 @@ import { Edit, UserPlus } from "lucide-react";
 import "./Users.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useLocation } from 'react-router-dom';
 
 export default function Users() {
   const [users, setUsers] = useState([]);
@@ -31,6 +32,8 @@ export default function Users() {
   const USERS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(false);
+
+  const loaction = useLocation();
 
   // Debounce për searchQuery
   useEffect(() => {
@@ -62,7 +65,7 @@ export default function Users() {
     };
 
     fetchData();
-  }, [debouncedQuery, currentPage]);
+  }, [debouncedQuery, currentPage, location.pathname]);
 
   // Reset global
   useEffect(() => {
@@ -119,6 +122,26 @@ export default function Users() {
       console.error(err);
       toast.error("Failed to update user");
     }
+  };
+
+  const Modal = ({ isOpen, onClose, children }) => {
+    useEffect(() => {
+      const handleEsc = (e) => {
+        if (e.key === "Escape") onClose();
+      };
+      window.addEventListener("keydown", handleEsc);
+      return () => window.removeEventListener("keydown", handleEsc);
+    }, [onClose]);
+
+    if (!isOpen) return null;
+
+    return (
+      <div className="modal-backdrop" onClick={onClose}>
+        <div onClick={(e) => e.stopPropagation()}>
+          {children}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -210,13 +233,25 @@ export default function Users() {
         </p>
       )}
 
+      {/* Register Modal */}
+      <Modal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)}>
+        <RegisterForm onClose={() => setIsRegisterOpen(false)} />
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+        <UserEditModal
+          formData={formData}
+          setFormData={setFormData}
+          onSave={handleEditSubmit}
+          onCancel={() => setIsEditModalOpen(false)}
+        />
+      </Modal>
+
       {/* Options Modal */}
-      {isOptionsModalOpen && (
-        <div
-          className="modal-backdrop"
-          onClick={() => setIsOptionsModalOpen(false)}
-        >
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <Modal isOpen={isOptionsModalOpen} onClose={() => setIsOptionsModalOpen(false)}>
+        <div className="options-modal-backdrop">
+          <div className="options-modal-content" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title">Choose an action</h2>
             <div className="options-buttons">
               <button onClick={handleEdit}>Edit User</button>
@@ -227,36 +262,8 @@ export default function Users() {
             </div>
           </div>
         </div>
-      )}
+      </Modal>
 
-      {/* Edit Modal */}
-      {isEditModalOpen && (
-        <div
-          className="modal-backdrop"
-          onClick={() => setIsEditModalOpen(false)}
-        >
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <UserEditModal
-              formData={formData}
-              setFormData={setFormData}
-              onSave={handleEditSubmit}
-              onCancel={() => setIsEditModalOpen(false)}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Register Modal */}
-      {isRegisterOpen && (
-        <div
-          className="modal-backdrop"
-          onClick={() => setIsRegisterOpen(false)}
-        >
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <RegisterForm onClose={() => setIsRegisterOpen(false)} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

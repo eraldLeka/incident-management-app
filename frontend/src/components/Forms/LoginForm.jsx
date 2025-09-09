@@ -21,7 +21,7 @@ export default function LoginForm() {
       setLoading(true);
       setError(null);
 
-      // thirr API për login
+      // calling API for login
       const data = await loginUser({ email, password });
       console.log("API login response:", data);
 
@@ -29,7 +29,7 @@ export default function LoginForm() {
         throw new Error("Token not received from backend");
       }
 
-      // përdor AuthContext për të ruajtur token + user
+      // using AuthContext to save token + user
       login(data);
       console.log("Auth context updated with:", data);
 
@@ -60,7 +60,7 @@ export default function LoginForm() {
         placeholder="Password"
         required
       />
-      <button type="submit" disabled={loading}>
+      <button className="loginBtn" type="submit" disabled={loading}>
         {loading ? "Logging in..." : "Login"}
       </button>
       {error && <p className="error-text">{error}</p>}

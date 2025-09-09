@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Menu from "../Menu/Menu";
 import api from "../../services/api";
 import "../Dashboards/Dashboard.css";
+import ThreeMonthsDonutApex from "../Statistics/statsDonutChartStatus";
+import Last7DaysAreaChart from "../Statistics/statusAreaChartStatus";
 
 export default function SystemAdminDashboard() {
   const [incidents, setIncidents] = useState([]);
@@ -25,7 +27,6 @@ export default function SystemAdminDashboard() {
     return () => (isMounted = false);
   }, []);
 
-  // Merr 3 incidentet më të fundit nga i gjithë sistemi
   const latestIncidents = [...incidents]
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 3);
@@ -42,7 +43,7 @@ export default function SystemAdminDashboard() {
       <main className="dashboard-body">
         {/* OPEN INCIDENTS */}
         <section className="dashboard-section">
-          <h2>Latest Open Incidents (System)</h2>
+          <h2>Latest Incidents (System)</h2>
 
           {loading ? (
             <div className="loading-container">Loading...</div>
@@ -85,15 +86,25 @@ export default function SystemAdminDashboard() {
           )}
         </section>
 
-        {/* INFO SECTION */}
-        <section className="dashboard-section">
-          <h2>About the System Admin Dashboard</h2>
-          <p>
-            Welcome to the system admin dashboard. Here you can monitor the most recent
-            open incidents across all sectors, track their status, and access the
-            full list for deeper investigation.
-          </p>
-        </section>
+      {/* CHARTS SECTION */}
+  <section className="dashboard-section">
+            <h2>Statistics</h2>
+            <div className="charts-row">
+              <div className="chart-container">
+                <ThreeMonthsDonutApex />
+              </div>
+              <div className="chart-container">
+                <Last7DaysAreaChart />
+              </div>
+            </div>
+            <div className="see-more-btn-container">
+              <button className="see-more-btn" onClick={() => navigate("/statistics")}>
+                See More
+              </button>
+            </div>
+          </section>
+
+
       </main>
     </>
   );

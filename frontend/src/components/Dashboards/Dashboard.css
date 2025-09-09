@@ -1,10 +1,8 @@
-/* --- Body & Dashboard Layout --- */
 body, html {
   margin: 0;
   padding: 0;
   width: 100%;
   overflow-x: hidden;
-  overflow-y: auto;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -15,14 +13,14 @@ body, html {
   width: 100%;
   padding: 50px 20px;
   box-sizing: border-box;
-  overflow-x: hidden;
-  height: auto;
 }
 
 .dashboard-section h2 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #072a7a;
   font-weight: 700;
+  text-align: left;
+  width: 100%;
 }
 
 .dashboard-section p {
@@ -31,7 +29,6 @@ body, html {
   line-height: 1.5;
 }
 
-/* --- Grid i kartave --- */
 .incident-grid.dashboard {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -39,7 +36,6 @@ body, html {
   justify-items: center;
 }
 
-/* --- Kartat --- */
 .incident-card {
   background: linear-gradient(145deg, #ffffff 0%, #e6f0ff 100%);
   border-radius: 12px;
@@ -59,10 +55,8 @@ body, html {
   box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
 
-/* Info Bar brenda kartave */
 .info-bar {
   display: flex;
-  justify-content: flex-start;
   gap: 8px;
   margin-bottom: 10px;
   align-items: center;
@@ -97,7 +91,6 @@ body, html {
   margin-top: 10px;
 }
 
-/* --- Karta “See All” / + --- */
 .new-incident-card {
   background: linear-gradient(145deg, #f0f8ff 0%, #d9e4ff 100%);
   display: flex;
@@ -112,14 +105,12 @@ body, html {
   transition: background-color 0.2s, color 0.2s, transform 0.2s;
 }
 
-
 .new-incident-card:hover {
   background-color: #007bff;
   color: #000;
   transform: translateY(-3px);
 }
 
-/* --- Loading & Empty States --- */
 .loading-container, .no-incidents {
   font-size: 1rem;
   color: #555;
@@ -127,23 +118,45 @@ body, html {
   text-align: center;
 }
 
-/* --- Responsivitet --- */
-@media (max-width: 1200px) {
-  .incident-grid.dashboard {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
+.charts-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
-@media (max-width: 900px) {
-  .incident-grid.dashboard {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
-  }
+.chart-container {
+  width: 640px;
+  height: 405px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
 }
 
-@media (max-width: 600px) {
-  .incident-grid.dashboard {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
+.see-more-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.see-more-btn {
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(135deg, #96bbef, #c8c8df);
+  font-weight: bold;
+}
+
+.see-more-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
